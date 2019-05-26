@@ -2,8 +2,10 @@ package sample;
 
 import Test.Test;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import java.util.*;
 
@@ -19,7 +21,7 @@ public class Controller {
     private ArrayList<Long> keyEventedTime = new ArrayList<>();
     private ArrayList<ArrayList<Long>> statisticsForTimeIntervals = new ArrayList<>();
     private int counterForTraining = 0;
-
+    private HashMap<Integer,Integer> mapForNumberOfMistakes = new HashMap<>();
     private String password = "biometrics";
     @FXML
     private Button trainBtn;
@@ -28,33 +30,54 @@ public class Controller {
     private Button okBtn;
 
     @FXML
-    private  TextArea txtArea;
+    private TextField userField;
 
+    @FXML
+    private PasswordField passwordField;
 
     @FXML
     void initialize()
     {
+        mapForNumberOfMistakes.put(6,2);
+        mapForNumberOfMistakes.put(7,2);
+        mapForNumberOfMistakes.put(8,3);
+        mapForNumberOfMistakes.put(9,3);
+        mapForNumberOfMistakes.put(10,3);
+        mapForNumberOfMistakes.put(11,4);
+        mapForNumberOfMistakes.put(12,4);
 
         if(counterForTraining < 10)
             okBtn.setDisable(true);
 
-        txtArea.setOnKeyPressed(event -> {
+        passwordField.setOnKeyPressed(event -> {
             long timePressed = System.currentTimeMillis();
-            holdDurationForEveryKey.put(event.getCode(),timePressed);
-            keyEventedTime.add(System.currentTimeMillis());
+            if(!event.getCode().getName().equals("Enter") || !event.getCode().getName().equals("Tab") ||!event.getCode().getName().equals("Backspace")) {
+                holdDurationForEveryKey.put(event.getCode(),timePressed);
+                keyEventedTime.add(System.currentTimeMillis());
+            }
+            if(event.getCode().getName().equals("Enter")) {
+                if(!trainBtn.isDisabled()) {
+                    trainBtn.fire();
+                } else if(!okBtn.isDisabled()) {
+                    okBtn.fire();
+                }
+            }
 
         });
 
-        txtArea.setOnKeyReleased(event
+        passwordField.setOnKeyReleased(event
                 -> {
-            long durationTime = System.currentTimeMillis() - holdDurationForEveryKey.get(event.getCode());
-            holdDurationForEveryKey.replace(event.getCode(),durationTime);
-            keyEventedTime.add(System.currentTimeMillis());
+            if(!event.getCode().getName().equals("Enter") || !event.getCode().getName().equals("Tab") ||!event.getCode().getName().equals("Backspace"))
+            {
+                long durationTime = System.currentTimeMillis() - holdDurationForEveryKey.get(event.getCode());
+                holdDurationForEveryKey.replace(event.getCode(),durationTime);
+                keyEventedTime.add(System.currentTimeMillis());
+            }
+
         });
 
         okBtn.setOnAction(event -> {
-            System.out.println(keyEventedTime.toString());
-            if(keyEventedTime.size() != 0 && txtArea.getText().trim().equals(password))
+            if(keyEventedTime.size() != 0 && passwordField.getText().trim().equals(password))
             {
                 int mistakeCounter = 0;
                 ArrayList<Long> checkAuth = properCountOfTimeIntervals(keyEventedTime);
@@ -63,23 +86,33 @@ public class Controller {
                     if(checkAuth.get(i) < Test.getTmin().get(i) || checkAuth.get(i) > Test.getTmax().get(i))
                         mistakeCounter++;
                 }
+                if(mistakeCounter <= mapForNumberOfMistakes.get(passwordField.getLength()))
+                {
+                    System.out.println("Congrats");
+                    alertSystem("Authentication succeed","Congratulations");
+                }
 
-                System.out.println(mistakeCounter);
+                else
+                {
+                    System.out.println("Oi oi, you cheeky wanker");
+                    alertSystem("Authentication failed","Oi oi, you cheeky wanker. Wanna tussle?");
+                }
+
             }
             keyEventedTime.clear();
-            txtArea.clear();
+            passwordField.clear();
 
         });
         trainBtn.setOnAction(event -> {
             System.out.println(counterForTraining);
-            if(txtArea.getText().trim().equals(password))
+            if(passwordField.getText().trim().equals(password))
             {
                 ArrayList<Long> timeIntervals = properCountOfTimeIntervals(keyEventedTime);
                 if(keyEventedTime.size() != 0)
                 {
                     statisticsForTimeIntervals.add(timeIntervals);
                 }
-                txtArea.clear();
+                passwordField.clear();
                 if(counterForTraining == 10) {
 
                     for (ArrayList<Long> value:statisticsForTimeIntervals) {
@@ -93,13 +126,11 @@ public class Controller {
                 } else {
                     counterForTraining++;
                 }
-                txtArea.requestFocus();
+                passwordField.requestFocus();
                 keyEventedTime.clear();
-            }
-            else
-            {
+            } else {
                 System.out.println("Wrong password, try again");
-                txtArea.clear();
+                passwordField.clear();
             }
         });
     }
@@ -108,7 +139,7 @@ public class Controller {
     {
         ArrayList<Long> timeIntervals = new ArrayList<>();
         Collections.sort(allIntervals);
-        for(int i = 0; i < 2*(txtArea.getLength() - 1) - 1; i++)
+        for(int i = 0; i < 2*(passwordField.getLength() - 1) - 1; i++)
         {
             if(i % 2 == 0) {
                 timeIntervals.add(allIntervals.get(i + 2) - allIntervals.get(i + 1));
@@ -118,5 +149,13 @@ public class Controller {
         return timeIntervals;
     }
 
+    public void alertSystem(String title, String contentText)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(contentText);
+        alert.showAndWait();
+    }
 
 }
