@@ -3,8 +3,8 @@ package Test;
 import java.util.ArrayList;
 
 public class Test {
-
-    private static double[] studentСoefficientFromTable = new double[]{6.313752,2.919986,2.353363,2.131847,2.015048,
+//    studentСoefficientFromTable
+    private  static  double[]  STUDENT_COEFFICIENT_FROM_TABLE = new double[]{6.313752,2.919986,2.353363,2.131847,2.015048,
             1.943180,1.894579,1.859548,1.833113,1.812461,1.795885,1.782288,1.770933,1.761310,1.753050};
     private static ArrayList<Double> mathExpectaion = new ArrayList<>();
     private static ArrayList<Double> arrayForDispersion = new ArrayList<>();
@@ -25,7 +25,7 @@ public class Test {
 //        int n = 8;
         int n = passwordLen - 2;
         int counterOfReplaces = 0;
-        for(int i = 0; i <passwordLen -1; i++)
+        for(int i = 0; i <passwordLen - 1; i++)
         {
             ArrayList<Long> elementsAtIndexes = extractElementsAtIndex(timeINtervals,i);
             long backUpElemnt;
@@ -44,7 +44,7 @@ public class Test {
                 arrayForDispersion.add(dispersion);
                 double studentKoef = Math.abs((backUpElemnt - mathExpectation)/dispersion);
                 calculatedStudentСoefficient.add(studentKoef);
-                if(studentKoef > studentСoefficientFromTable[7+1])
+                if(studentKoef > STUDENT_COEFFICIENT_FROM_TABLE[7+1])
                 {
                     timeINtervals.get(j).set(i,-1L);
                     counterOfReplaces++;
@@ -121,10 +121,10 @@ public class Test {
             tempExpectation.add(mathExpectation);
             double dispersion = Math.sqrt(calcDispersion(mathExpectation,elementsAtIndex,password,true));
             tempDispersion.add(dispersion);
-            System.out.println("Coefficient: " +studentСoefficientFromTable[sizeOfArray - 1] + "for length: " + sizeOfArray);
-            double minTime = mathExpectation - studentСoefficientFromTable[sizeOfArray - 1]*dispersion;
+            System.out.println("Coefficient: " +STUDENT_COEFFICIENT_FROM_TABLE[sizeOfArray - 1] + "for length: " + sizeOfArray);
+            double minTime = mathExpectation - STUDENT_COEFFICIENT_FROM_TABLE[sizeOfArray - 1]*dispersion;
             Tmin.add(minTime);
-            double maxTime = mathExpectation + studentСoefficientFromTable[sizeOfArray - 1]*dispersion;
+            double maxTime = mathExpectation + STUDENT_COEFFICIENT_FROM_TABLE[sizeOfArray - 1]*dispersion;
             Tmax.add(maxTime);
         }
         System.out.println("Down time border: " + Tmin.toString());
