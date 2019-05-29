@@ -6,7 +6,7 @@ Behavioral biometrics authentification designed to distinguish users using their
 1. Check if the users pattern already exists. If not - train the program and create.
 2. Authenticate the user by his pattern.
 
-# The math is behind this
+# The mathematics behind this
 
 - By typing 10 times and collecting interlvals user creates a matrix of intervals with size 10x10
 - The program transposes the matrix
