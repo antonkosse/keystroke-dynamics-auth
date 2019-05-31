@@ -8,7 +8,7 @@ Behavioral biometrics authentification designed to distinguish users using their
 
 # The mathematics behind this
 
-- By typing 10 times and collecting interlvals user creates a matrix of intervals with size 10x10
+- By typing 10 times and collecting intervals user creates a matrix of them with size 10x10
 - The program transposes the matrix
 - Calculate the matematical expectation for each element of the transposed matrix
 - Calculate dispersion for each element
